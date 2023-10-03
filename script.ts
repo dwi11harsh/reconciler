@@ -1,4 +1,4 @@
-let vDOM = [];
+let vDOM: { id: number; title: string; description: string }[] = [];
 
 function createDomElements() {
   var parentElement = document.getElementById("mainArea");
@@ -10,9 +10,13 @@ function createDomElements() {
       deleted = 0,
       updated = 0;
 
-    vDOM.forEach(function (item) {
+    vDOM.forEach(function (item: {
+      title: string;
+      description: string;
+      id: number;
+    }) {
       var existingChild = currentChildren.find(function (child) {
-        return child.dataset.id === String(item.id);
+        return (child as HTMLElement).dataset.id === String(item.id);
       });
 
       if (existingChild) {
@@ -28,7 +32,7 @@ function createDomElements() {
         added++;
 
         var childElement = document.createElement("div");
-        childElement.dataset.id = item.id;
+        childElement.dataset.id = item.id.toString();
 
         var grandChildElement1 = document.createElement("span");
         grandChildElement1.innerHTML = item.title;
@@ -46,13 +50,13 @@ function createDomElements() {
         childElement.appendChild(grandChildElement1);
         childElement.appendChild(grandChildElement2);
         childElement.appendChild(grandChildElement3);
-        parentElement.appendChild(childElement);
+        if (parentElement) parentElement.appendChild(childElement);
       }
     });
 
     currentChildren.forEach(function (child) {
       deleted++;
-      parentElement.removeChild(child);
+      if (parentElement) parentElement.removeChild(child);
     });
 
     console.log(added);
@@ -61,17 +65,25 @@ function createDomElements() {
   }
 }
 
-function updateVirtualDom(data) {
-  vDOM = data.map((item) => {
-    return {
-      id: item.id,
-      title: item.title,
-      description: item.description,
-    };
-  });
+function updateVirtualDom(
+  data: {
+    title: string;
+    description: string;
+    id: number;
+  }[]
+) {
+  vDOM = data.map(
+    (item: { title: string; description: string; id: number }) => {
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+      };
+    }
+  );
 }
 window.setInterval(() => {
-  let todos = [];
+  let todos: { title: string; description: string; id: number }[] = [];
   for (let i = 0; i < Math.floor(Math.random() * 100); i++) {
     todos.push({
       title: "Go to gym",
